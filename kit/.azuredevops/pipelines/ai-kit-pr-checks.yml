@@ -1,0 +1,88 @@
+# AI kit - pull request checks: layer rules, build and tests of the projects affected by the PR, optional formatting.
+# Same script as the agents and the Stop quality gate use locally (dotnet-check.ps1): one definition of "green".
+# Compiler errors, failed tests and layer violations are annotated on the run and visible from the pull request.
+#
+# Setup (done by a human; the devops agent may prepare it but never creates pipelines or policies without approval):
+#   1. Pipelines > New pipeline > Azure Repos Git > Existing Azure Pipelines YAML file > this file.
+#   2. Repos > Branches > <base branch> > Branch policies > Build validation > add this pipeline.
+#      Azure Repos ignores YAML "pr:" triggers: the branch policy is what runs it on every pull request.
+#   3. Replace the pool with your company agents if needed; Windows-only agents without PowerShell 7: use "powershell:"
+#      instead of "pwsh:" below.
+# If the repository already has a PR validation pipeline, add the "AI kit checks" step to it instead.
+# kit:pr-checks
+trigger: none
+
+parameters:
+  - name: testScope
+    displayName: Tests to run (affected = projects impacted by the pull request)
+    type: string
+    default: affected
+    values:
+      - affected
+      - all
+      - none
+  - name: verifyFormat
+    displayName: Fail when the C# files changed by the PR are not formatted (whole repository on manual runs)
+    type: boolean
+    default: false
+
+variables:
+  DOTNET_NOLOGO: 'true'
+  DOTNET_CLI_TELEMETRY_OPTOUT: 'true'
+
+pool:
+  vmImage: windows-latest
+
+steps:
+  - checkout: self
+    fetchDepth: 0 # full history: affected projects are computed against the target branch
+
+  - task: UseDotNet@2
+    displayName: .NET SDK from global.json
+    inputs:
+      packageType: sdk
+      useGlobalJson: true
+
+  - task: NuGetAuthenticate@1
+    displayName: Authenticate to the intranet NuGet feed
+
+  - pwsh: |
+      $scope = '${{ parameters.testScope }}'
+      $target = '$(System.PullRequest.TargetBranch)' -replace '^refs/heads/', ''
+      $isPr = $target -and -not $target.StartsWith('$(')
+      $a = @('-Build', '-Architecture', '-Ci', '-Configuration', 'Release')
+      if ($isPr) { $a += @('-Base', "origin/$target") } elseif ($scope -eq 'affected') { $scope = 'all' }
+      if ($scope -ne 'none') { $a += @('-Test', '-Scope', $scope) }
+      & ./.github/skills/dotnet-build-test/scripts/dotnet-check.ps1 @a
+      exit $LASTEXITCODE
+    displayName: AI kit checks (layers, build, tests)
+
+  - task: PublishTestResults@2
+    displayName: Publish test results
+    condition: succeededOrFailed()
+    inputs:
+      testResultsFormat: VSTest
+      testResultsFiles: '.ai-local/test-results/**/*.trx'
+      failTaskOnMissingResultsFile: false
+
+  - ${{ if eq(parameters.verifyFormat, true) }}:
+      - pwsh: |
+          $target = '$(System.PullRequest.TargetBranch)' -replace '^refs/heads/', ''
+          $files = @('.')
+          if ($target -and -not $target.StartsWith('$(')) {
+            $files = @(git diff --name-only --diff-filter=ACMR "origin/$target...HEAD" -- '*.cs')
+            if ($files.Count -eq 0) { Write-Host 'No C# file changed by this pull request.'; exit 0 }
+          }
+          $manifest = ''
+          if (Test-Path '.config/dotnet-tools.json') { $manifest = Get-Content '.config/dotnet-tools.json' -Raw }
+          if ($manifest -match '"csharpier"') {
+            dotnet tool restore
+            # CSharpier 1.x: "check" verb; 0.x: "--check" option.
+            if ($manifest -match '(?s)"csharpier"\s*:\s*\{[^}]*"version"\s*:\s*"0\.') { dotnet csharpier --check $files } else { dotnet csharpier check $files }
+          } elseif ($files[0] -eq '.') {
+            dotnet format whitespace . --folder --verify-no-changes --verbosity minimal
+          } else {
+            dotnet format whitespace . --folder --verify-no-changes --verbosity minimal --include $files
+          }
+          exit $LASTEXITCODE
+        displayName: Verify formatting of the changed C# files

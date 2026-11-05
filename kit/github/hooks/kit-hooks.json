@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "powershell": "powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .github/hooks/scripts/session-start.ps1",
+        "bash": "pwsh -NoLogo -NoProfile -NonInteractive -File .github/hooks/scripts/session-start.ps1",
+        "timeoutSec": 20
+      }
+    ],
+    "PreToolUse": [
+      {
+        "type": "command",
+        "powershell": "powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .github/hooks/scripts/pre-tool-guard.ps1",
+        "bash": "pwsh -NoLogo -NoProfile -NonInteractive -File .github/hooks/scripts/pre-tool-guard.ps1",
+        "timeoutSec": 15
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "powershell": "powershell -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File .github/hooks/scripts/stop-quality-gate.ps1",
+        "bash": "pwsh -NoLogo -NoProfile -NonInteractive -File .github/hooks/scripts/stop-quality-gate.ps1",
+        "timeoutSec": 900
+      }
+    ]
+  }
+}

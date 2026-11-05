@@ -1,0 +1,81 @@
+{
+  "kitVersion": "1.1.0",
+  "bootstrap": {
+    "status": "pending",
+    "completedAt": null,
+    "solution": null,
+    "template": {
+      "packageId": null,
+      "shortName": null,
+      "version": null,
+      "source": null,
+      "parameters": {}
+    }
+  },
+  "internalPackages": {
+    "prefixes": [],
+    "sources": []
+  },
+  "architecture": {
+    "enabled": true,
+    "layers": [
+      { "name": "Tests", "projectPattern": "(?i)(\\.|^)(Unit|Integration|Functional|Acceptance|Architecture|Arch|Component|E2E)?Tests?$", "mayReference": ["*"], "forbiddenPackages": [] },
+      { "name": "SharedKernel", "projectPattern": "(?i)(\\.|^)(SharedKernel|Kernel)$", "mayReference": [], "forbiddenPackages": ["Microsoft.EntityFrameworkCore*", "Microsoft.AspNetCore*"] },
+      { "name": "Domain", "projectPattern": "(?i)(\\.|^)Domain$", "mayReference": ["SharedKernel"], "forbiddenPackages": ["Microsoft.EntityFrameworkCore*", "Microsoft.AspNetCore*", "Microsoft.Data.SqlClient", "System.Data.SqlClient", "Dapper*", "Azure.*", "Newtonsoft.Json"] },
+      { "name": "Contracts", "projectPattern": "(?i)(\\.|^)(Contracts|Abstractions)$", "mayReference": ["SharedKernel"], "forbiddenPackages": ["Microsoft.EntityFrameworkCore*"] },
+      { "name": "Application", "projectPattern": "(?i)(\\.|^)(Application|UseCases)$", "mayReference": ["Domain", "SharedKernel", "Contracts"], "forbiddenPackages": ["Microsoft.EntityFrameworkCore.SqlServer", "Microsoft.EntityFrameworkCore.Sqlite", "Npgsql*", "Microsoft.AspNetCore.Mvc*"] },
+      { "name": "Infrastructure", "projectPattern": "(?i)(\\.|^)(Infrastructure|Persistence|DataAccess|Integration|Adapters?)(\\.[A-Za-z0-9]+)?$", "mayReference": ["Application", "Domain", "SharedKernel", "Contracts"], "forbiddenPackages": [] },
+      { "name": "Presentation", "projectPattern": "(?i)(\\.|^)(Api|WebApi|Web|Host|Presentation|Functions|Worker|Grpc|Endpoints|Server)$", "mayReference": ["Application", "Infrastructure", "Domain", "SharedKernel", "Contracts"], "forbiddenPackages": [] }
+    ]
+  },
+  "guard": {
+    "enabled": true,
+    "secretScan": true,
+    "piiScan": true,
+    "protectedBranches": ["main", "master", "develop", "release/*"],
+    "denyReadPaths": ["**/*.pfx", "**/*.p12", "**/*.pem", "**/*.key", "**/.env", "**/.env.*", "**/*.publishsettings", "**/id_rsa*", "**/*.snk"],
+    "denyWritePaths": [".git/**", "**/*.g.cs", "**/*.g.i.cs", "**/*.Designer.cs", "**/obj/**", "**/bin/**"],
+    "askWritePaths": [".github/hooks/**", ".github/kit/**", "**/nuget.config", "**/NuGet.Config", "**/Directory.Packages.props", "**/global.json", "**/Migrations/*.cs"],
+    "extraDenyCommands": [],
+    "extraAskCommands": [],
+    "allowCommands": []
+  },
+  "qualityGate": {
+    "enabled": true,
+    "build": true,
+    "tests": "affected",
+    "testFilter": "",
+    "testArgs": [],
+    "format": "off",
+    "maxBlocks": 2,
+    "timeoutSec": 840
+  },
+  "logging": {
+    "enabled": true,
+    "retentionDays": 30
+  },
+  "git": {
+    "baseBranch": "",
+    "branchPattern": "feature/{workitem}-{slug}",
+    "workItemStyle": "AB#{id}",
+    "mergeStrategy": "squash"
+  },
+  "models": {
+    "mode": "auto",
+    "tiers": {
+      "reasoning": [],
+      "balanced": [],
+      "fast": []
+    },
+    "agents": {
+      "planner": "reasoning",
+      "reviewer": "reasoning",
+      "debugger": "reasoning",
+      "implementer": "balanced",
+      "devops": "balanced",
+      "context-engineer": "balanced",
+      "conductor": "balanced",
+      "researcher": "fast"
+    }
+  }
+}

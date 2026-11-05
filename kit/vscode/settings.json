@@ -1,0 +1,52 @@
+{
+  // ---------------------------------------------------------------------------------------------
+  // AI kit - workspace settings for VS Code + GitHub Copilot.
+  // Your organization's Copilot policies may override or lock some of them.
+  // ---------------------------------------------------------------------------------------------
+
+  // Instructions: AGENTS.md is always loaded; .github/instructions/*.instructions.md when applyTo matches.
+  "chat.useAgentsMdFile": true,
+  "chat.includeApplyingInstructions": true,
+  "chat.includeReferencedInstructions": true,
+
+  // Hooks (.github/hooks/*.json) for the Local harness. The Copilot harness reads them natively.
+  // Needs a trusted workspace. If hooks do not run, enable this setting in your User settings too.
+  "chat.useHooks": true,
+
+  // Terminal auto-approval: local, read-only or verification commands run without a prompt (faster loops).
+  // false = always ask. The kit guard hook still checks every command, approved or not.
+  // If workspace-level rules are ignored by your VS Code version or policy, copy them to your User settings.
+  "chat.tools.terminal.autoApprove": {
+    "/^dotnet (build|test|restore|--info|--version|--list-sdks|list\\b|new list|tool restore|format\\b.*--verify-no-changes)/": true,
+    "/^dotnet ef (migrations (list|script|has-pending-model-changes)|dbcontext info)\\b/": true,
+    "/^git (status|diff|log|show|rev-parse|merge-base|ls-files|blame|remote -v|fetch|stash list)\\b/": true,
+    "/^git branch( --list| -a| -r| -vv| --show-current)?$/": true,
+    "/^(pwsh|powershell)(\\.exe)? -NoProfile( -ExecutionPolicy Bypass)? -File \\.github[\\\\/](skills|hooks)[\\\\/]/": true,
+    "/^git (push|reset|clean|rebase|merge|cherry-pick|checkout|restore|tag)\\b/": false,
+    "/^git branch -[dD]\\b/": false,
+    "/^git stash (drop|clear)\\b/": false,
+    "/^dotnet (nuget|add|remove|package|reference|ef database|ef migrations (add|remove)|new (install|uninstall))\\b/": false,
+    "/^(az|azd|kubectl|helm|terraform)\\b/": false,
+    "/^(rm|del|rmdir|rd|Remove-Item|ri|Move-Item|Rename-Item)\\b/": false,
+    "/\\b(Invoke-Expression|iex|Invoke-WebRequest|iwr|Invoke-RestMethod|irm|curl|wget)\\b/": false,
+    "/^(npm|npx|pnpm|yarn|pip)\\b/": false
+  },
+
+  // Commit message, PR description and selection review buttons follow the team conventions.
+  "github.copilot.chat.commitMessageGeneration.instructions": [
+    { "text": "Use Conventional Commits: type(scope): imperative summary under 72 characters. Body explains why. End with the work item reference (AB#<id>) when the branch name contains an id." }
+  ],
+  "github.copilot.chat.pullRequestDescriptionGeneration.instructions": [
+    { "text": "Follow .azuredevops/pull_request_template.md: summary, linked spec, work items, changes, how it was verified (exact commands and results), checklist." }
+  ],
+  "github.copilot.chat.reviewSelection.instructions": [
+    { "file": ".github/skills/code-review/references/checklist.md" }
+  ],
+
+  // Faster, cleaner searches for humans and agents.
+  "search.exclude": {
+    "**/bin": true,
+    "**/obj": true,
+    "**/.ai-local": true
+  }
+}

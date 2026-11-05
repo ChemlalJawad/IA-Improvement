@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "github.copilot-chat",
+    "ms-dotnettools.csdevkit",
+    "ms-azure-devops.azure-pipelines",
+    "editorconfig.editorconfig"
+  ]
+}

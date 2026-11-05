@@ -1,0 +1,3 @@
+# Machine-local AI state (logs, discovery output, test results)
+.ai-local/
+# Test sandboxes kept with -KeepSandbox live in the temp folder, nothing to ignore here.
