@@ -55,12 +55,16 @@ IA-Improvement/
 │   ├── .azuredevops/        template de pull request + pipeline de contrôles de PR
 │   ├── docs/ai/  docs/adr/  contexte IA, glossaire, paquets internes, évaluations, décisions
 │   └── specs/               spec-driven development (gabarits)
-├── docs/GUIDE.md            la méthode complète (à lire)
+├── docs/TUTORIEL.md         prise en main pas à pas (à faire en premier)
+├── docs/GUIDE.md            la méthode complète (référence)
 └── tests/Test-Kit.ps1       auto-test du kit
 ```
 
 Les dossiers `github/` et `vscode/` sont stockés sans le point dans ce dépôt : ils ne deviennent `.github/` et
 `.vscode/` que dans le projet cible, au moment de `install.ps1` (le kit ne s'active donc jamais sur lui-même).
 
-**À lire ensuite : [docs/GUIDE.md](docs/GUIDE.md)** : philosophie, patterns, workflows quotidiens, modèles et coûts,
+**Par où commencer : [docs/TUTORIEL.md](docs/TUTORIEL.md)** : mise en route, cycle complet d'une fonctionnalité,
+choix de l'agent, demandes efficaces, travail en parallèle, mode autonome, coûts et amélioration continue.
+
+**Référence : [docs/GUIDE.md](docs/GUIDE.md)** : philosophie, patterns, workflows quotidiens, modèles et coûts,
 garde-fous, compatibilité VS Code (moteurs Local / Copilot), évolution du kit et dépannage.

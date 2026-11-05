@@ -2,6 +2,7 @@
 
 ## 1.1.0 - 2026-11-05
 Ce qui manquait par rapport à la façon de travailler des équipes d'Anthropic.
+- **Tutoriel** : `docs/TUTORIEL.md`, prise en main pas à pas sur un exemple complet (AB#1234), du bootstrap à la retro.
 - **Travail en parallèle** : skill `parallel-work` et `worktree.ps1` (`-New`, `-List`, `-Remove`, `-Prune`) : une tâche,
   un worktree git, une branche au format de l'équipe, une session. Jamais de suppression forcée (nouvelle règle du guard).
 - **Formatage automatique** : `qualityGate.format` accepte `whitespace`, `csharpier` ou `auto` ; la découverte détecte

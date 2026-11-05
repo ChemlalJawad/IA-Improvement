@@ -3,6 +3,7 @@
 Ce guide explique **comment travailler** avec le kit : les principes, l'architecture, les workflows du quotidien, les
 modèles et les coûts, les garde-fous, l'amélioration continue et le dépannage. Il vise VS Code + GitHub Copilot sur des
 projets .NET / Azure en Clean Architecture + DDD, avec Azure DevOps pour le code et le CI/CD.
+Pour apprendre par la pratique, commencez par le [tutoriel](TUTORIEL.md).
 
 ---
 
